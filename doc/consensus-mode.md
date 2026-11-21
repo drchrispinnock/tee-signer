@@ -47,7 +47,7 @@ enum Policy {
 | Magic | Kind | Layout after magic (big-endian) |
 |---|---|---|
 | `0x11` | block | chain_id(4) · shell header: level(i32) proto(u8) predecessor(32) timestamp(i64) validation_pass(u8) operations_hash(32) fitness(dyn) context(32) · protocol data |
-| `0x12` | preattestation | chain_id(4) · branch(32) · tag(u8 = 20) · slot(u16) · level(i32) · round(i32) · block_payload_hash(32) |
+| `0x12` | preattestation | tz1–3: chain_id(4) · branch(32) · tag(u8 = 20) · slot(u16) · level(i32) · round(i32) · block_payload_hash(32). **tz4: same without slot, tag 40 (verified, see open question 1)** |
 | `0x13` | attestation | chain_id(4) · branch(32) · tag(u8 = 21 / 23 with DAL) · slot(u16) · level(i32) · round(i32) · block_payload_hash(32) [· dal content] |
 
   - The block round is the last 4 bytes of the Tenderbake fitness, matching Octez and gotez's
@@ -86,11 +86,22 @@ the handle came from `GenerateAndImport` in this same session. Otherwise it stay
 
 ## Open questions
 
-1. **BLS (tz4) payload format since Seoul/Tallinn.** Attestations from BLS keys are aggregated.
-   Confirm from Octez source (`src/proto_alpha/lib_protocol/operation_repr.ml`, the signer's
-   watermark handling) whether the bytes a tz4 consensus key signs still include `slot`, and
-   which tags are used (`attestation`, `attestation_with_dal`, aggregate variants). Test vectors
-   must come from a real tz4 baker on Shadownet.
+1. **BLS (tz4) payload format: partly verified (mainnet, PsUshuai, 2026-11-21).**
+   A real octez-signer log for a tz4 consensus + companion key pair shows that **every** request
+   is 78 bytes: preattestations (magic `0x12`), attestations (`0x13`, consensus key) and
+   companion-key requests (`0x13`). The tz1-style layout would be 80 bytes, so BLS keys sign
+   **without the slot**.
+   - **Preattestation, verified** against a live mainnet signature from that key (BLS POP ciphersuite):
+     `0x12 · chain_id(4) · branch(32) · 0x28 · level(i32) · round(i32) · block_payload_hash(32)`.
+     The tag is **40 (`0x28`)**, not the operation tag 20, so the BLS signing encoding uses its own tags.
+   - **Attestation: not yet verified.** Each attestation produces two signing requests (consensus
+     key and companion key), and the on-chain signature appears to be their aggregate, so the
+     consensus-key message alone doesn't verify. Expected (unconfirmed):
+     `0x13 · chain_id · branch · tag(41 or 43?) · level · round · block_payload_hash`.
+     The companion key's 78-byte payload is unknown. Next step: take the encodings from the Octez
+     source and check with `AggregateVerify([consensus_pk, companion_pk], [m1, m2], sig)`.
+   - Implication for the parser: accept only the 78-byte BLS forms for tz4 keys. Level and round are
+     at the same offsets (38 and 42) in all of them.
 2. **DAL companion key**: which payloads it signs, and whether it needs its own watermark kind.
 3. **Safety margin** after an unclear restart (spec §7.3): optionally refuse levels below
    `stored_level + N` on the first sign after `LoadWatermark`.
