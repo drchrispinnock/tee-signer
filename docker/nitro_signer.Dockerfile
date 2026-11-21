@@ -1,6 +1,6 @@
 # Pinned by digest (multi-arch index: amd64 + arm64) so builds are reproducible.
 # Update deliberately: a new digest changes PCR0.
-ARG BASE_IMAGE=public.ecr.aws/amazonlinux/amazonlinux:2@sha256:f1e677d4e1674fdf860331805f0af4a516c5524e3ba0a5663cee49a96df1f648
+ARG BASE_IMAGE=public.ecr.aws/amazonlinux/amazonlinux:2023@sha256:5c38fd85b00ce8c094315d9b71f671f880052314a22bd25f1a027821bf61d9d7
 ARG RUST_VERSION=1.95.0
 
 FROM $BASE_IMAGE AS builder
@@ -10,7 +10,7 @@ ARG RUST_VERSION
 # Used by BuildKit to clamp file timestamps (see scripts/build-eif.sh).
 ARG SOURCE_DATE_EPOCH
 
-RUN yum install -y \
+RUN dnf install -y \
     gcc \
     git \
     tar \
@@ -35,7 +35,7 @@ RUN [ ! -z "$RELEASE" ] && TGT="release" || TGT="debug"; \
     done && \
     for bin in $BINS; do cp "$bin" .; done
 
-RUN mkdir -p ./etc/pki/tls/certs/ && cp -f /etc/pki/tls/certs/* ./etc/pki/tls/certs/
+RUN mkdir -p ./etc/pki/tls/certs/ && cp -fL /etc/pki/tls/certs/* ./etc/pki/tls/certs/
 RUN find ./
 
 FROM scratch
