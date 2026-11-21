@@ -1,0 +1,92 @@
+{
+  "source": "Tezos mainnet mempool, collected 2026-11-21. Each signature was verified with the BLS POP ciphersuite (BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_POP_) over message_hex, no pre-hash.",
+  "layout": "78 bytes: magic(0x12 preattestation | 0x13 attestation) chain_id(4) branch(32) tag(40 bls_mode_preattestation | 41 bls_mode_attestation) level(i32) round(i32) block_payload_hash(32)",
+  "vectors": [
+    {
+      "kind": "attestation_with_dal",
+      "protocol": "PsUshuai9QapM5TGj1JpuVGkdxz5GykdnEvS6Rh8SUVrARvZLCY",
+      "chain_id": "NetXdQprcVkpaWU",
+      "level": 15909534,
+      "round": 0,
+      "message_hex": "137a06a7703c58c3055053f199e7dede4c0dfc26f3174820297034ac47b27482600f1600862900f2c29e00000000ec925f1e5e5231ac272a11846c925ce3bb399450c15509be5219798bf491ca2a",
+      "consensus_pk": "BLpk1wJqvR2vgMr8LUnsNV5j4tUTPtuSKzSqTe4KwpgjsWM7v5cc1ksvYxsRH2uKP331QbgohhEV",
+      "signature": "BLsigBCx8Cd1PLLFfKyfX5ztktoVR4m66Zg49Ti8kdvj5wYaejPeRtr3EjeL9B4edvsXpKhK1b7c569kSToYXtyNqwNKiDbMWeEkoCUdScz6ZeYJovgQeqA4uvL6oMdvY5iM5hLfUqqdry",
+      "companion_pk": "BLpk1vU468gUu4Kp7qCtY5fVMBi14wxqFRvcynJeQJ95ANBe8nGcNMHAMAxadQdqjZh3JGpMn5L9",
+      "dal_attestation": "0",
+      "note": "signature = consensus_sig + z*companion_sig; both keys sign message_hex",
+      "consensus_pk_hex": "ac6d9ad6e139c4b557fb86fe694c72a468975cd5c6052f17857fed28bcc44dd3824d5e975cb9522fc9ebe363f3721b47",
+      "signature_hex": "abc28bdd7d650d565f6a226323e4b7202b493d1af3166af52b857d17d04dafd26600b0084b026ff0fffcd677b0fcf2b406fca90dbd71efc7f61a91ec64417362ed915400bc31147c422667b24f799f237312c12ea7e84aed44204115ccc5f0c8",
+      "companion_pk_hex": "a8ec73eee5325aed7cc579d7c8d056edb3dc7c94713b9e6ae2703a8939b1cf62047efa7807efb7f45cc0221128851cf2",
+      "single_key": false
+    },
+    {
+      "kind": "preattestation",
+      "protocol": "PsUshuai9QapM5TGj1JpuVGkdxz5GykdnEvS6Rh8SUVrARvZLCY",
+      "chain_id": "NetXdQprcVkpaWU",
+      "level": 15909534,
+      "round": 0,
+      "message_hex": "127a06a7703c58c3055053f199e7dede4c0dfc26f3174820297034ac47b27482600f1600862800f2c29e00000000ec925f1e5e5231ac272a11846c925ce3bb399450c15509be5219798bf491ca2a",
+      "consensus_pk": "BLpk1vW7Fs3Sp3sM23JD5nNmBfmkvHzDyiJ7aymPwh87nqn7fjqSV7q4VFDhRV6MAYNZszKcJHdw",
+      "signature": "BLsig9gvukJbhg8HcreWgSve7YwbAc34d599snPWU5Zd1XEbtvm7U3niFDkMNUw3yHsvb2AhqVEysHpcNWGUCKMinbcarZE7QpDKXdNvr6MhGGEDqfqM1oapRPbCNiRaNnFWUu5NE6ZiTs",
+      "consensus_pk_hex": "a9123ba92901b6568da04b9871b22e307841b62165a39515258f6c00f2746f5641fbcb29a8bfa2d469e8b87edac99862",
+      "signature_hex": "84b608739aa786dd2996de453eaa4a561c15a52fa2a4128f1d622cf90c4ea85366431a863b859a3f56383929674eace3154c4d77b2c61a195e2e622920ddbd1c3c775ca7ad14ca48b490be26348b064c1ac0b0511fe59b46739a18f79bbc11ed",
+      "single_key": true
+    },
+    {
+      "kind": "preattestation",
+      "protocol": "PsUshuai9QapM5TGj1JpuVGkdxz5GykdnEvS6Rh8SUVrARvZLCY",
+      "chain_id": "NetXdQprcVkpaWU",
+      "level": 15909535,
+      "round": 0,
+      "message_hex": "127a06a770b0ea7381b1ceb7c51eee74a978036bd8cb53aff94c683df5d34b201224f405d02800f2c29f00000000218fd2a0cb04a77c55f2603e5b1177cfad379e1feefdfd38a422118e03353e6e",
+      "consensus_pk": "BLpk1qXR9oHyWVfVk3CQVv3poWyRkoQ5yt69xrKQtBZMJeeGF7PJfirrULqJcVCSbE7T5nEawmpm",
+      "signature": "BLsigBGagdqCi5vS9rigRhuXHtCoeo8cVj3WfDECu2hCahk6Bu6Hvs3R7xKFdn21TVzRzn9JLn8Q3bg3JSiMK7FMzuMw55ausMM1LK1YpuGV3BeuTnhV8iBShxgzsLNhSd9hTkHLsotEok",
+      "consensus_pk_hex": "9455ca0c1df38e8c6a7a62cdb01236f1a5605326f8a9a97abcf5cf566404b49678f89c9846f936ec4f9f699066468cf5",
+      "signature_hex": "ad5ed78fed7d195c0a646e6ba123f7958ad6290979b7531dec48a44b3471ea0abfca4582e1a9850bc9f784b557e1dfde0de57644b198aeebc718a9ea0602beb48bfb34c0ce75acd91780ac52c118ea801957a99312340c778d3f879b28cf1064",
+      "single_key": true
+    },
+    {
+      "kind": "attestation_with_dal",
+      "protocol": "PsUshuai9QapM5TGj1JpuVGkdxz5GykdnEvS6Rh8SUVrARvZLCY",
+      "chain_id": "NetXdQprcVkpaWU",
+      "level": 15909536,
+      "round": 0,
+      "message_hex": "137a06a77097625c349583af35a90b4709e6e835109c1758a69c0b74aa1a9b5eb1aa3581c22900f2c2a000000000c55654fef8bc2ff5b808d3d343626618ead292e1339eb755d6ad5085aa1c2f0e",
+      "consensus_pk": "BLpk1rWgqtHXkWjEkVnZ5tBkNEWpccWqYxP5Sea8RnurEvuX37MDW6JfjK9xzzzEF2J1eZ7Xmumt",
+      "signature": "BLsigBdYwyHPrkSj97v4SpuViJemyRn47F6tcsZWwvk4umB1bPD9HZpChyxHtHdBL35aaXLWfy4d53QfBBLnzP11dmTMp438cPRtxVfnqHBbfmx5z5ftfSzRfjnCe9gF61WDEgnmzKgnn3",
+      "companion_pk": "BLpk1qVDqickP7LC2qhaPaXSsA6r7qsnaoSk52p5u6UgkyeiryjUC7FcbeymofB3kWBvsQmn5wnS",
+      "dal_attestation": "0",
+      "note": "signature = consensus_sig + z*companion_sig; both keys sign message_hex",
+      "consensus_pk_hex": "9872e080536d91bc5ac6aa85555633d4f78d9ed948420e2d09db8d2c9073195c991fdda5c7a0544b3c0c56ccb7e80a81",
+      "signature_hex": "b6ac685582075e375460e0ff5dae2f959036a97e8885a8bd50c4a8624bb4114339e1f323c29997ea33a307e88d50a95f0686eca951969b46a797fbf341ea96d9191ee01f69ee9f1a85e20b90415000ac8e228f38fdd2b6a71964f329785ac6ff",
+      "companion_pk_hex": "942d6d59a894c71181308a8527d0959a5e6949633c4236e052121af4ebe3221214f73ba13fdaa57ba7cef51fef629966",
+      "single_key": false
+    },
+    {
+      "kind": "attestation",
+      "protocol": "PsUshuai9QapM5TGj1JpuVGkdxz5GykdnEvS6Rh8SUVrARvZLCY",
+      "chain_id": "NetXdQprcVkpaWU",
+      "level": 15909536,
+      "round": 0,
+      "message_hex": "137a06a77097625c349583af35a90b4709e6e835109c1758a69c0b74aa1a9b5eb1aa3581c22900f2c2a000000000c55654fef8bc2ff5b808d3d343626618ead292e1339eb755d6ad5085aa1c2f0e",
+      "consensus_pk": "BLpk1vKe8GfjHgjvimtaXStXcRN6gSqwwFu9ksZG3prr8TyFSH3WvVYJSKnAs27cgMSMHkKhrbbn",
+      "signature": "BLsigBTmmwG31j9QLirqvFHGrHB4n5ZKUWKjmwtkSjbySswsZadvrVvSSrAy9DVDze5NqTrMXEXZBn3QSQDzdgcnowpoyrZATpCHVSamrBQam7YhjfsiCViDL7sMoVWXjcbWGx6REd7nLE",
+      "consensus_pk_hex": "a851c08cf010031543bfbf14a4774c274fb86298cb378558bf093d09ec9e540d502ded8680965d6dbada3d5e2b743bd3",
+      "signature_hex": "b255d3b0f2e49e56c44c417630b800e926484f9d397c8d549a0f2bb9e06fdb5c964bf07665c2657e2110bdc0d797755910ac875ad34003c40e5065322e3c240eccf71b5b6605db4893572c3853e0ba4730bdbc633f8eb1244ef0586ee9154fe2",
+      "single_key": true
+    },
+    {
+      "kind": "attestation",
+      "protocol": "PsUshuai9QapM5TGj1JpuVGkdxz5GykdnEvS6Rh8SUVrARvZLCY",
+      "chain_id": "NetXdQprcVkpaWU",
+      "level": 15909537,
+      "round": 0,
+      "message_hex": "137a06a770532fd4c70a7ede47ab186f218d174762f98e551d40a918b4024662588b61ca0a2900f2c2a10000000027510dee694fc8abacdb5e414dc33dfc328d1d913e2801cd7cd2dbd707747ff2",
+      "consensus_pk": "BLpk1vKe8GfjHgjvimtaXStXcRN6gSqwwFu9ksZG3prr8TyFSH3WvVYJSKnAs27cgMSMHkKhrbbn",
+      "signature": "BLsig9jEMxYdPgfkjtp579irodDrA8uWWYWizjVxLrus75GFTk7omajSDofQWTGn1koWGSRvcSRiZx6GD3dCu15o5LaXFkaYtSdnd33MGZkvrU5wKBRabhYc1QPcCBwxMKrqCgTiZJGadk",
+      "consensus_pk_hex": "a851c08cf010031543bfbf14a4774c274fb86298cb378558bf093d09ec9e540d502ded8680965d6dbada3d5e2b743bd3",
+      "signature_hex": "85bb58528f1ca857130a0a255be55ca3c354d9a1d73a9373d96b0b12d44d9918f5a77e302192eef6d833abe42efba9b702732a48bf3273290d5aeae16544b6fd485988b9e9d5fab6ac8b3c8700abe1b79842c0af7e2c622846a94235a0c45903",
+      "single_key": true
+    }
+  ]
+}

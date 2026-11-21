@@ -47,8 +47,8 @@ enum Policy {
 | Magic | Kind | Layout after magic (big-endian) |
 |---|---|---|
 | `0x11` | block | chain_id(4) · shell header: level(i32) proto(u8) predecessor(32) timestamp(i64) validation_pass(u8) operations_hash(32) fitness(dyn) context(32) · protocol data |
-| `0x12` | preattestation | tz1–3: chain_id(4) · branch(32) · tag(u8 = 20) · slot(u16) · level(i32) · round(i32) · block_payload_hash(32). **tz4: same without slot, tag 40 (verified, see open question 1)** |
-| `0x13` | attestation | chain_id(4) · branch(32) · tag(u8 = 21 / 23 with DAL) · slot(u16) · level(i32) · round(i32) · block_payload_hash(32) [· dal content] |
+| `0x12` | preattestation | tz4 (only supported type): chain_id(4) · branch(32) · tag(u8 = 40) · level(i32) · round(i32) · block_payload_hash(32), exactly 78 bytes |
+| `0x13` | attestation | tz4: chain_id(4) · branch(32) · tag(u8 = 41) · level(i32) · round(i32) · block_payload_hash(32), exactly 78 bytes, with or without DAL |
 
   - The block round is the last 4 bytes of the Tenderbake fitness, matching Octez and gotez's
     `GetRoundFromTenderbakeBlock`.
@@ -86,23 +86,25 @@ the handle came from `GenerateAndImport` in this same session. Otherwise it stay
 
 ## Open questions
 
-1. **BLS (tz4) payload format: partly verified (mainnet, PsUshuai, 2026-11-21).**
-   A real octez-signer log for a tz4 consensus + companion key pair shows that **every** request
-   is 78 bytes: preattestations (magic `0x12`), attestations (`0x13`, consensus key) and
-   companion-key requests (`0x13`). The tz1-style layout would be 80 bytes, so BLS keys sign
-   **without the slot**.
-   - **Preattestation, verified** against a live mainnet signature from that key (BLS POP ciphersuite):
-     `0x12 · chain_id(4) · branch(32) · 0x28 · level(i32) · round(i32) · block_payload_hash(32)`.
-     The tag is **40 (`0x28`)**, not the operation tag 20, so the BLS signing encoding uses its own tags.
-   - **Attestation: not yet verified.** Each attestation produces two signing requests (consensus
-     key and companion key), and the on-chain signature appears to be their aggregate, so the
-     consensus-key message alone doesn't verify. Expected (unconfirmed):
-     `0x13 · chain_id · branch · tag(41 or 43?) · level · round · block_payload_hash`.
-     The companion key's 78-byte payload is unknown. Next step: take the encodings from the Octez
-     source and check with `AggregateVerify([consensus_pk, companion_pk], [m1, m2], sig)`.
-   - Implication for the parser: accept only the 78-byte BLS forms for tz4 keys. Level and round are
-     at the same offsets (38 and 42) in all of them.
-2. **DAL companion key**: which payloads it signs, and whether it needs its own watermark kind.
+1. ~~BLS (tz4) payload format~~ **Resolved (mainnet, PsUshuai, 2026-11-21).** Octez's
+   `Operation_repr.Encoding.Bls_mode` (`bls_mode_unsigned_operation`) drops the slot, "to ensure that
+   all delegates sign the same message, which is required for BLS proof of possession aggregation".
+   tz4 keys sign exactly 78 bytes, with the BLS POP ciphersuite and no pre-hash (tee-signer `SigningVersion::V2`):
+   - preattestation: `0x12 · chain_id(4) · branch(32) · 40 · level(i32) · round(i32) · block_payload_hash(32)`
+   - attestation: `0x13 · chain_id(4) · branch(32) · 41 · level(i32) · round(i32) · block_payload_hash(32)`
+   - **With DAL content, the consensus key and the companion key both sign the same tag-41 message.** The DAL
+     bitset is not in the signed bytes. The baker aggregates `sig = sig_consensus + z·sig_companion` with
+     `z = LE(blake2b-256(consensus_pkh ‖ companion_pkh ‖ op ‖ bitset))` (`Dal_dependent_signing`). That
+     happens in the baker, not the signer.
+   - Evidence: an octez-signer log from a tz4 consensus + companion baker (every request 78 bytes, two
+     `0x13` requests per attestation), and live mainnet signatures that verify (single-key, and DAL with
+     the weighted aggregate key). `signer_core/testdata/tz4_consensus_vectors.json` holds 6 vectors. The
+     single-key ones are checked by `crypto::bls::mainnet_vectors`. Gap: no vector yet with a non-zero
+     DAL bitset (all mainnet samples had bitset 0).
+   - Parser consequence: a tz4 consensus *or companion* key accepts only these two 78-byte forms (plus
+     blocks, consensus key only). Level and round are at bytes 38 and 42. The companion key keeps its own
+     watermark, with the same rules.
+2. ~~DAL companion key~~ Resolved: it signs the same tag-41 attestation bytes as the consensus key (see 1). It gets its own watermark.
 3. **Safety margin** after an unclear restart (spec §7.3): optionally refuse levels below
    `stored_level + N` on the first sign after `LoadWatermark`.
 4. **Signatory side**: the matching change in `drchrispinnock/signatory` (Nitro vault calls

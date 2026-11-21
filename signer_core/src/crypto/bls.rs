@@ -323,3 +323,70 @@ impl From<BLST_ERROR> for Error {
 }
 
 impl std::error::Error for Error {}
+
+/// Real Tezos mainnet consensus signatures from tz4 bakers (see testdata/). These pin down that
+/// `SigningVersion::V2` matches what the protocol verifies, and confirm the BLS-mode payload layout
+/// the consensus-mode parser relies on.
+#[cfg(test)]
+mod mainnet_vectors {
+    use super::{min_pk, PublicKey, Signature};
+    use crate::crypto::{SigningVersion, Verifier};
+
+    const VECTORS: &str = include_str!("../../testdata/tz4_consensus_vectors.json");
+
+    fn hex(s: &str) -> Vec<u8> {
+        (0..s.len())
+            .step_by(2)
+            .map(|i| u8::from_str_radix(&s[i..i + 2], 16).unwrap())
+            .collect()
+    }
+
+    fn vectors() -> Vec<serde_json::Value> {
+        let v: serde_json::Value = serde_json::from_str(VECTORS).unwrap();
+        v["vectors"].as_array().unwrap().clone()
+    }
+
+    #[test]
+    fn layout_matches_level_and_round() {
+        for v in vectors() {
+            let msg = hex(v["message_hex"].as_str().unwrap());
+            assert_eq!(msg.len(), 78);
+            let (magic, tag) = match v["kind"].as_str().unwrap() {
+                "preattestation" => (0x12, 40),
+                _ => (0x13, 41),
+            };
+            assert_eq!(msg[0], magic);
+            assert_eq!(msg[37], tag);
+            let level = i32::from_be_bytes(msg[38..42].try_into().unwrap());
+            let round = i32::from_be_bytes(msg[42..46].try_into().unwrap());
+            assert_eq!(level as i64, v["level"].as_i64().unwrap());
+            assert_eq!(round as i64, v["round"].as_i64().unwrap());
+        }
+    }
+
+    #[test]
+    fn single_key_signatures_verify_with_v2() {
+        let mut n = 0;
+        for v in vectors()
+            .iter()
+            .filter(|v| v["single_key"].as_bool().unwrap())
+        {
+            let msg = hex(v["message_hex"].as_str().unwrap());
+            let pk = PublicKey(
+                min_pk::PublicKey::uncompress(&hex(v["consensus_pk_hex"].as_str().unwrap()))
+                    .unwrap(),
+            );
+            let sig = Signature(
+                min_pk::Signature::uncompress(&hex(v["signature_hex"].as_str().unwrap())).unwrap(),
+            );
+            pk.verify(&msg, &sig, SigningVersion::V2)
+                .unwrap_or_else(|e| panic!("{} level {}: {e:?}", v["kind"], v["level"]));
+            // Flipping one byte of the payload must break it.
+            let mut bad = msg.clone();
+            bad[45] ^= 1;
+            assert!(pk.verify(&bad, &sig, SigningVersion::V2).is_err());
+            n += 1;
+        }
+        assert!(n >= 4, "expected at least 4 single-key vectors, got {n}");
+    }
+}
