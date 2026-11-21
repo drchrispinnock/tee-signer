@@ -47,3 +47,7 @@ eif-nitro: image-nitro
     nitro-cli build-enclave \
         --docker-uri "{{ nitro_image }}:{{ image_tag }}" \
         --output-file "{{ eif_output }}"
+
+# Reproducible EIF + measurements via containerised nitro-cli (works on macOS too).
+eif-repro arch="arm64":
+    scripts/build-eif.sh {{ arch }}

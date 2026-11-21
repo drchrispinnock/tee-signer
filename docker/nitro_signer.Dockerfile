@@ -1,10 +1,14 @@
-ARG BASE_IMAGE=public.ecr.aws/amazonlinux/amazonlinux:2
+# Pinned by digest (multi-arch index: amd64 + arm64) so builds are reproducible.
+# Update deliberately: a new digest changes PCR0.
+ARG BASE_IMAGE=public.ecr.aws/amazonlinux/amazonlinux:2@sha256:f1e677d4e1674fdf860331805f0af4a516c5524e3ba0a5663cee49a96df1f648
 ARG RUST_VERSION=1.95.0
 
 FROM $BASE_IMAGE AS builder
 
 ARG RELEASE
 ARG RUST_VERSION
+# Used by BuildKit to clamp file timestamps (see scripts/build-eif.sh).
+ARG SOURCE_DATE_EPOCH
 
 RUN yum install -y \
     gcc \
@@ -15,7 +19,7 @@ RUN yum install -y \
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain ${RUST_VERSION}
 
 COPY . /tee-signer
-RUN source $HOME/.cargo/env && cd tee-signer && cargo build ${RELEASE:+--release} --bin nitro_signer_app
+RUN source $HOME/.cargo/env && cd tee-signer && cargo build --locked ${RELEASE:+--release} --bin nitro_signer_app
 
 RUN mkdir -p /rootfs
 WORKDIR /rootfs
