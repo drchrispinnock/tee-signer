@@ -5,6 +5,7 @@ use rand_core::CryptoRngCore;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use std::future::Future;
 
+pub mod consensus;
 pub mod crypto;
 #[cfg(feature = "test-utils")]
 pub mod mock;
